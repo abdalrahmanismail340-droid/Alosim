@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aloSIM Redeem Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-hover: #334155;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #334155;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Cairo', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+    }
+
+    header {
+      text-align: center;
+      padding: 24px 0 16px;
+    }
+
+    header h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #60a5fa, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    header p { color: var(--muted); font-size: 0.9rem; }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 18px;
+      background: var(--card);
+      padding: 5px;
+      border-radius: var(--radius);
+      overflow-x: auto;
+    }
+
+    .tab {
+      flex: 1;
+      min-width: 70px;
+      padding: 9px 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab.active { background: var(--primary); color: white; }
+    .tab:hover:not(.active) { background: var(--card-hover); color: var(--text); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    textarea { min-height: 70px; resize: vertical; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: var(--primary); color: white; width: 100%; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-sm { padding: 7px 11px; font-size: 0.82rem; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--card-hover); color: var(--text); }
+
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+    .btn-danger:hover { background: var(--danger); color: white; }
+
+    .btn-row { display: flex; gap: 8px; margin-top: 10px; }
+    .btn-row .btn { flex: 1; }
+
+    .codes-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .code-item {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .code-value {
+      font-family: ui-monospace, monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .badge-redeemed { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+
+    .code-meta { font-size: 0.78rem; color: var(--muted); }
+    .code-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+
+    .empty { text-align: center; padding: 36px 16px; color: var(--muted); }
+    .empty-icon { font-size: 2.3rem; margin-bottom: 8px; }
+
+    .guide-section { margin-bottom: 18px; }
+    .guide-section h3 { font-size: 1rem; margin-bottom: 9px; color: #60a5fa; }
+
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      position: relative;
+      padding: 9px 12px 9px 46px;
+      margin-bottom: 7px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .steps li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      right: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .tip {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 11px 13px;
+      font-size: 0.85rem;
+      color: #93c5fd;
+      margin-top: 10px;
+    }
+
+    .links { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; }
+    .links a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 10px 13px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .links a:hover { background: var(--card-hover); }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--success);
+      color: white;
+      padding: 11px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 100;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.error { background: var(--danger); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: #60a5fa; }
+    .stat-label { font-size: 0.78rem; color: var(--muted); }
+
+    /* Login & Mail styles */
+    .account-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .account-email {
+      font-family: ui-monospace, monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      word-break: break-all;
+      margin-bottom: 4px;
+    }
+
+    .msg-item {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .msg-item:hover { background: var(--card-hover); }
+    .msg-item.unread { border-color: var(--primary); }
+
+    .msg-from { font-size: 0.82rem; color: var(--muted); margin-bottom: 2px; }
+    .msg-subject { font-weight: 600; font-size: 0.92rem; }
+    .msg-date { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    .msg-body {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      margin-top: 12px;
+      font-size: 0.9rem;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+    .status-dot.on { background: var(--success); box-shadow: 0 0 6px var(--success); }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .password-toggle {
+      position: relative;
+    }
+    .password-toggle input { padding-left: 40px; }
+    .password-toggle button {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 4px;
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.35rem; }
+      .tab { font-size: 0.78rem; padding: 8px 6px; }
+      .code-actions { flex-direction: column; }
+      .code-actions .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>aloSIM Redeem Helper</h1>
+      <p>إدارة كودات + لوجين + إيميل مؤقت (mail.tm)</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="codes">الكودات</button>
+      <button class="tab" data-tab="login">اللوجين</button>
+      <button class="tab" data-tab="mail">إيميل مؤقت</button>
+      <button class="tab" data-tab="guide">الدليل</button>
+      <button class="tab" data-tab="add">إضافة</button>
+    </div>
+
+    <!-- Codes Panel -->
+    <div id="codes" class="panel active">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="total-count">0</div>
+          <div class="stat-label">إجمالي الكودات</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="pending-count">0</div>
+          <div class="stat-label">قيد الانتظار</div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📋 قائمة الكودات</h2>
+        <div id="codes-list" class="codes-list">
+          <div class="empty">
+            <div class="empty-icon">📭</div>
+            <p>مفيش كودات محفوظة لسه</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Panel -->
+    <div id="login" class="panel">
+      <div class="card">
+        <h2>🔐 بيانات حساب aloSIM</h2>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px">
+          البيانات بتتحفظ محليًا في المتصفح فقط (مش بتتبعت لأي سيرفر).
+        </p>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">الإيميل</label>
+            <input type="email" id="login-email" placeholder="example@mail.tm" autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label for="login-pass">كلمة المرور</label>
+            <div class="password-toggle">
+              <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" id="toggle-pass">👁</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-note">ملاحظة (اختياري)</label>
+            <input type="text" id="login-note" placeholder="حساب رئيسي / حساب تجريبي..." />
+          </div>
+          <button type="submit" class="btn btn-primary">حفظ البيانات</button>
+        </form>
+      </div>
+
+      <div class="card" id="saved-account-card" style="display:none">
+        <h2>✅ الحساب المحفوظ</h2>
+        <div class="account-box">
+          <div class="account-email" id="saved-email">—</div>
+          <div class="code-meta" id="saved-note"></div>
+          <div class="btn-row" style="margin-top:12px">
+            <button class="btn btn-sm btn-ghost" id="copy-email-btn">نسخ الإيميل</button>
+            <button class="btn btn-sm btn-ghost" id="copy-pass-btn">نسخ الباسورد</button>
+            <button class="btn btn-sm btn-danger" id="clear-login-btn">مسح</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mail.tm Panel -->
+    <div id="mail" class="panel">
+      <div class="card">
+        <h2>📧 إيميل مؤقت (mail.tm)</h2>
+        <div class="status-bar">
+          <span class="status-dot" id="mail-status-dot"></span>
+          <span id="mail-status-text">جاهز لتوليد إيميل</span>
+        </div>
+
+        <div id="mail-create-section">
+          <div class="form-group">
+            <label>اسم المستخدم (اختياري)</label>
+            <input type="text" id="mail-username" placeholder="اتركه فاضي للتوليد العشوائي" />
+          </div>
+          <div class="form-group">
+            <label>كلمة مرور الإيميل</label>
+            <input type="text" id="mail-password" value="AloSim2026!" />
+          </div>
+          <button class="btn btn-primary" id="create-mail-btn">توليد إيميل جديد</button>
+        </div>
+
+        <div id="mail-active-section" style="display:none">
+          <div class="account-box">
+            <div class="account-email" id="active-mail-address">—</div>
+            <div class="code-meta">كلمة المرور: <span id="active-mail-pass">—</span></div>
+            <div class="btn-row" style="margin-top:10px">
+              <button class="btn btn-sm btn-primary" id="copy-mail-btn">نسخ الإيميل</button>
+              <button class="btn btn-sm btn-ghost" id="copy-mail-pass-btn">نسخ الباسورد</button>
+              <button class="btn btn-sm btn-ghost" id="refresh-inbox-btn">تحديث الوارد</button>
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <h3 style="font-size:0.95rem;margin-bottom:10px">صندوق الوارد</h3>
+            <div id="inbox-list">
+              <div class="empty" style="padding:20px">
+                <p>مفيش رسائل لسه</p>
+              </div>
+            </div>
+            <div id="msg-detail" style="display:none"></div>
+          </div>
+
+          <button class="btn btn-danger" id="delete-mail-btn" style="margin-top:14px;width:100%">حذف الإيميل الحالي</button>
+        </div>
+      </div>
+
+      <div class="tip">
+        الإيميلات من mail.tm مؤقتة وبتنحذف بعد فترة. استخدمها لإنشاء حسابات تجريبية فقط.
+      </div>
+    </div>
+
+    <!-- Guide Panel -->
+    <div id="guide" class="panel">
+      <div class="card">
+        <h2>📖 دليل ريديم كودات aloSIM</h2>
+
+        <div class="guide-section">
+          <h3>١. كود Voucher / aloCASH</h3>
+          <ol class="steps">
+            <li>افتح تطبيق aloSIM أو الموقع alosim.com</li>
+            <li>ادخل على حسابك</li>
+            <li>روح على Profile → Manage Billing</li>
+            <li>اضغط ADD أو ADD VOUCHER</li>
+            <li>الصق الكود واضغط Redeem</li>
+            <li>الرصيد هيتحط في aloCASH</li>
+          </ol>
+        </div>
+
+        <div class="guide-section">
+          <h3>٢. كود خصم (Promo / Discount)</h3>
+          <ol class="steps">
+            <li>اختار الباقة اللي محتاجها</li>
+            <li>روح على صفحة الدفع (Checkout)</li>
+            <li>دور على خانة "Add promo code"</li>
+            <li>الصق الكود واضغط Apply</li>
+            <li>هيظهر الخصم على الإجمالي</li>
+          </ol>
+          <div class="tip">غالبًا كودات الخصم بتشتغل على أول عملية شراء بس، ومش بتشتغل مع الدفع بـ aloCASH.</div>
+        </div>
+
+        <div class="guide-section">
+          <h3>٣. كود داتا مجانية (Free Data)</h3>
+          <ol class="steps">
+            <li>افتح تطبيق aloSIM</li>
+            <li>روح على تبويب Rewards</li>
+            <li>الصق الكود في الخانة</li>
+            <li>اختار باقة 30 يوم المكتوب عليها Free</li>
+            <li>كمل الـ checkout بـ $0</li>
+          </ol>
+        </div>
+
+        <div class="links">
+          <a href="https://alosim.com" target="_blank" rel="noopener">فتح موقع aloSIM</a>
+          <a href="https://mail.tm" target="_blank" rel="noopener">موقع mail.tm</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Panel -->
+    <div id="add" class="panel">
+      <div class="card">
+        <h2>➕ إضافة كود جديد</h2>
+        <form id="add-form">
+          <div class="form-group">
+            <label for="code-input">الكود</label>
+            <input type="text" id="code-input" placeholder="مثال: ALO123XYZ" required autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="type-input">نوع الكود</label>
+            <select id="type-input">
+              <option value="voucher">Voucher / aloCASH</option>
+              <option value="promo">Promo / خصم</option>
+              <option value="free">Free Data</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="note-input">ملاحظة (اختياري)</label>
+            <textarea id="note-input" placeholder="مصدر الكود، تاريخ الانتهاء..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">حفظ الكود</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_CODES = 'alosim_redeem_codes';
+    const STORAGE_LOGIN = 'alosim_login_data';
+    const STORAGE_MAIL = 'alosim_mail_tm';
+    const API = 'https://api.mail.tm';
+
+    // ========== Utils ==========
+    function load(key, def = null) {
+      try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
+    }
+    function save(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.toggle('error', isError);
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function formatDate(ts) {
+      return new Date(ts).toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function typeLabel(type) {
+      return { voucher: 'Voucher / aloCASH', promo: 'Promo / خصم', free: 'Free Data', other: 'أخرى' }[type] || type;
+    }
+
+    // ========== Tabs ==========
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ========== Codes ==========
+    function loadCodes() { return load(STORAGE_CODES, []); }
+    function saveCodes(c) { save(STORAGE_CODES, c); }
+
+    function renderCodes() {
+      const codes = loadCodes();
+      const list = document.getElementById('codes-list');
+      document.getElementById('total-count').textContent = codes.length;
+      document.getElementById('pending-count').textContent = codes.filter(c => c.status === 'pending').length;
+
+      if (!codes.length) {
+        list.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><p>مفيش كودات محفوظة لسه</p></div>`;
+        return;
+      }
+
+      list.innerHTML = codes.map(c => `
+        <div class="code-item">
+          <div class="code-header">
+            <div>
+              <div class="code-value">${escapeHtml(c.code)}</div>
+              <div class="code-meta">${typeLabel(c.type)} · ${formatDate(c.createdAt)}</div>
+            </div>
+            <span class="badge ${c.status === 'redeemed' ? 'badge-redeemed' : 'badge-pending'}">
+              ${c.status === 'redeemed' ? 'تم الريديم' : 'قيد الانتظار'}
+            </span>
+          </div>
+          ${c.note ? `<div class="code-meta">${escapeHtml(c.note)}</div>` : ''}
+          <div class="code-actions">
+            <button class="btn btn-sm btn-primary copy-btn" data-code="${escapeHtml(c.code)}">نسخ</button>
+            ${c.status === 'pending'
+              ? `<button class="btn btn-sm btn-success mark-btn" data-id="${c.id}">تم الريديم</button>`
+              : `<button class="btn btn-sm btn-ghost unmark-btn" data-id="${c.id}">إرجاع</button>`}
+            <button class="btn btn-sm btn-danger delete-btn" data-id="${c.id}">حذف</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('add-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const code = document.getElementById('code-input').value.trim();
+      if (!code) return;
+      const codes = loadCodes();
+      codes.unshift({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        code,
+        type: document.getElementById('type-input').value,
+        note: document.getElementById('note-input').value.trim(),
+        status: 'pending',
+        createdAt: Date.now()
+      });
+      saveCodes(codes);
+      renderCodes();
+      document.getElementById('code-input').value = '';
+      document.getElementById('note-input').value = '';
+      showToast('تم حفظ الكود ✓');
+      document.querySelector('[data-tab="codes"]').click();
+    });
+
+    document.getElementById('codes-list').addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.classList.contains('copy-btn')) {
+        navigator.clipboard.writeText(btn.dataset.code).then(() => showToast('تم النسخ ✓'));
+      }
+      if (btn.classList.contains('mark-btn') || btn.classList.contains('unmark-btn')) {
+        const id = btn.dataset.id;
+        const status = btn.classList.contains('mark-btn') ? 'redeemed' : 'pending';
+        saveCodes(loadCodes().map(c => c.id === id ? { ...c, status } : c));
+        renderCodes();
+        showToast('تم التحديث ✓');
+      }
+      if (btn.classList.contains('delete-btn')) {
+        if (confirm('متأكد من الحذف؟')) {
+          saveCodes(loadCodes().filter(c => c.id !== btn.dataset.id));
+          renderCodes();
+          showToast('تم الحذف');
+        }
+      }
+    });
+
+    // ========== Login ==========
+    function renderLogin() {
+      const data = load(STORAGE_LOGIN);
+      const card = document.getElementById('saved-account-card');
+      if (data && data.email) {
+        card.style.display = 'block';
+        document.getElementById('saved-email').textContent = data.email;
+        document.getElementById('saved-note').textContent = data.note || '';
+        document.getElementById('login-email').value = data.email;
+        document.getElementById('login-pass').value = data.password || '';
+        document.getElementById('login-note').value = data.note || '';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-pass').value;
+      const note = document.getElementById('login-note').value.trim();
+      if (!email) return showToast('اكتب الإيميل', true);
+      save(STORAGE_LOGIN, { email, password, note });
+      renderLogin();
+      showToast('تم حفظ بيانات الحساب ✓');
+    });
+
+    document.getElementById('toggle-pass').addEventListener('click', () => {
+      const inp = document.getElementById('login-pass');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    });
+
+    document.getElementById('copy-email-btn').addEventListener('click', () => {
+      const d = load(STORAGE_LOGIN);
+      if (d?.email) navigator.clipboard.writeText(d.email).then(() => showToast('تم نسخ الإيميل ✓'));
+    });
+
+    document.getElementById('copy-pass-btn').addEventListener('click', () => {
+      const d = load(STORAGE_LOGIN);
+      if (d?.password) navigator.clipboard.writeText(d.password).then(() => showToast('تم نسخ الباسورد ✓'));
+    });
+
+    document.getElementById('clear-login-btn').addEventListener('click', () => {
+      if (confirm('مسح بيانات اللوجين؟')) {
+        localStorage.removeItem(STORAGE_LOGIN);
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-pass').value = '';
+        document.getElementById('login-note').value = '';
+        renderLogin();
+        showToast('تم المسح');
+      }
+    });
+
+    // ========== mail.tm ==========
+    let mailToken = null;
+    let mailAccount = null;
+
+    function setMailStatus(text, active = false) {
+      document.getElementById('mail-status-text').textContent = text;
+      document.getElementById('mail-status-dot').classList.toggle('on', active);
+    }
+
+    function randomUser() {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let s = '';
+      for (let i = 0; i < 10; i++) s += chars[Math.floor(Math.random() * chars.length)];
+      return s;
+    }
+
+    async function getDomains() {
+      const res = await fetch(`${API}/domains`);
+      const data = await res.json();
+      return data['hydra:member'] || [];
+    }
+
+    async function createMailAccount() {
+      const btn = document.getElementById('create-mail-btn');
+      btn.disabled = true;
+      btn.innerHTML = 'جاري التوليد <span class="spinner"></span>';
+      setMailStatus('جاري إنشاء الإيميل...');
+
+      try {
+        const domains = await getDomains();
+        if (!domains.length) throw new Error('مفيش دومين متاح حاليًا');
+
+        const domain = domains[0].domain;
+        let username = document.getElementById('mail-username').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');
+        if (!username) username = randomUser();
+        const password = document.getElementById('mail-password').value || 'AloSim2026!';
+        const address = `${username}@${domain}`;
+
+        // Create account
+        const createRes = await fetch(`${API}/accounts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, password })
+        });
+
+        if (!createRes.ok) {
+          const err = await createRes.json().catch(() => ({}));
+          throw new Error(err['hydra:description'] || err.message || 'فشل إنشاء الحساب');
+        }
+
+        // Get token
+        const tokenRes = await fetch(`${API}/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ address, password })
+        });
+        if (!tokenRes.ok) throw new Error('فشل الحصول على التوكن');
+
+        const tokenData = await tokenRes.json();
+        mailToken = tokenData.token;
+        mailAccount = { address, password, id: tokenData.id };
+
+        save(STORAGE_MAIL, { address, password, token: mailToken });
+
+        document.getElementById('mail-create-section').style.display = 'none';
+        document.getElementById('mail-active-section').style.display = 'block';
+        document.getElementById('active-mail-address').textContent = address;
+        document.getElementById('active-mail-pass').textContent = password;
+        setMailStatus('متصل: ' + address, true);
+        showToast('تم إنشاء الإيميل ✓');
+        await refreshInbox();
+      } catch (err) {
+        showToast(err.message || 'حصل خطأ', true);
+        setMailStatus('فشل التوليد');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'توليد إيميل جديد';
+      }
+    }
+
+    async function refreshInbox() {
+      if (!mailToken) return;
+      const list = document.getElementById('inbox-list');
+      list.innerHTML = '<div class="loading">جاري التحديث <span class="spinner"></span></div>';
+      document.getElementById('msg-detail').style.display = 'none';
+
+      try {
+        const res = await fetch(`${API}/messages`, {
+          headers: { Authorization: `Bearer ${mailToken}` }
+        });
+        if (!res.ok) throw new Error('فشل جلب الرسائل');
+        const data = await res.json();
+        const messages = data['hydra:member'] || [];
+
+        if (!messages.length) {
+          list.innerHTML = '<div class="empty" style="padding:20px"><p>مفيش رسائل لسه</p></div>';
+          return;
+        }
+
+        list.innerHTML = messages.map(m => `
+          <div class="msg-item ${m.seen ? '' : 'unread'}" data-id="${m.id}">
+            <div class="msg-from">${escapeHtml(m.from?.address || m.from || '—')}</div>
+            <div class="msg-subject">${escapeHtml(m.subject || '(بدون عنوان)')}</div>
+            <div class="msg-date">${m.createdAt ? new Date(m.createdAt).toLocaleString('ar-EG') : ''}</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<div class="empty" style="padding:20px"><p style="color:var(--danger)">${escapeHtml(err.message)}</p></div>`;
+      }
+    }
+
+    async function openMessage(id) {
+      if (!mailToken) return;
+      const detail = document.getElementById('msg-detail');
+      detail.style.display = 'block';
+      detail.innerHTML = '<div class="loading">جاري فتح الرسالة <span class="spinner"></span></div>';
+
+      try {
+        const res = await fetch(`${API}/messages/${id}`, {
+          headers: { Authorization: `Bearer ${mailToken}` }
+        });
+        if (!res.ok) throw new Error('فشل فتح الرسالة');
+        const msg = await res.json();
+
+        const body = msg.text || msg.html || '(مفيش محتوى)';
+        detail.innerHTML = `
+          <div class="msg-body">
+            <strong>من:</strong> ${escapeHtml(msg.from?.address || '')}<br>
+            <strong>العنوان:</strong> ${escapeHtml(msg.subject || '')}<br><br>
+            ${escapeHtml(typeof body === 'string' ? body : JSON.stringify(body))}
+          </div>
+          <button class="btn btn-sm btn-ghost" style="margin-top:8px" onclick="document.getElementById('msg-detail').style.display='none'">إغلاق</button>
+        `;
+      } catch (err) {
+        detail.innerHTML = `<div class="empty"><p style="color:var(--danger)">${escapeHtml(err.message)}</p></div>`;
+      }
+    }
+
+    function restoreMailSession() {
+      const saved = load(STORAGE_MAIL);
+      if (saved?.token && saved?.address) {
+        mailToken = saved.token;
+        mailAccount = saved;
+        document.getElementById('mail-create-section').style.display = 'none';
+        document.getElementById('mail-active-section').style.display = 'block';
+        document.getElementById('active-mail-address').textContent = saved.address;
+        document.getElementById('active-mail-pass').textContent = saved.password || '—';
+        setMailStatus('متصل: ' + saved.address, true);
+        refreshInbox();
+      }
+    }
+
+    document.getElementById('create-mail-btn').addEventListener('click', createMailAccount);
+    document.getElementById('refresh-inbox-btn').addEventListener('click', refreshInbox);
+
+    document.getElementById('copy-mail-btn').addEventListener('click', () => {
+      if (mailAccount?.address) navigator.clipboard.writeText(mailAccount.address).then(() => showToast('تم نسخ الإيميل ✓'));
+    });
+    document.getElementById('copy-mail-pass-btn').addEventListener('click', () => {
+      if (mailAccount?.password) navigator.clipboard.writeText(mailAccount.password).then(() => showToast('تم نسخ الباسورد ✓'));
+    });
+
+    document.getElementById('delete-mail-btn').addEventListener('click', () => {
+      if (!confirm('حذف الإيميل الحالي من التطبيق؟')) return;
+      localStorage.removeItem(STORAGE_MAIL);
+      mailToken = null;
+      mailAccount = null;
+      document.getElementById('mail-create-section').style.display = 'block';
+      document.getElementById('mail-active-section').style.display = 'none';
+      setMailStatus('جاهز لتوليد إيميل');
+      showToast('تم الحذف');
+    });
+
+    document.getElementById('inbox-list').addEventListener('click', e => {
+      const item = e.target.closest('.msg-item');
+      if (item) openMessage(item.dataset.id);
+    });
+
+    // Init
+    renderCodes();
+    renderLogin();
+    restoreMailSession();
+  </script>
+</body>
+</html>
