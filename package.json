@@ -1,0 +1,12 @@
+{
+  "name": "alosim-redeem-helper",
+  "version": "1.0.0",
+  "description": "aloSIM Redeem Helper with mail.tm",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
